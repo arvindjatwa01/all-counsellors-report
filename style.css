@@ -1,0 +1,126 @@
+/* #myChart {
+            margin: 20px auto;
+            width: 50vw;
+        } */
+
+@media (min-width: 768px) {
+}
+
+.filters {
+  background-color: #fff;
+}
+
+.reset {
+  all: revert;
+}
+
+#montheFilterEye,
+#sujectFilterEye {
+  /* display: none; */
+}
+
+@media only screen and (max-width: 768px) {
+  #myChart {
+    /* position: relative; */
+    /* margin: auto; */
+    /* height: 100% !important; */
+    /* width: 80vw; */
+    /* transform: rotate(90deg); */
+    /* height: 30vh; */
+  }
+  .monthsOpen {
+    -webkit-animation: conditionalOpen 1s normal forwards ease-in-out;
+    -moz-animation: conditionalOpen 1s normal forwards ease-in-out;
+    animation: conditionalOpen 1s normal forwards ease-in-out;
+    -webkit-transform-origin: 50% 0%;
+    -moz-transform-origin: 50% 0%;
+  }
+
+  .monthsClose {
+    -webkit-animation: conditionalClose 1s normal forwards ease-in-out;
+    -moz-animation: conditionalClose 1s normal forwards ease-in-out;
+    animation: conditionalClose 1s normal forwards ease-in-out;
+    -webkit-transform-origin: 100% 0%;
+    -moz-transform-origin: 100% 0%;
+    transform-origin: 100% 0%;
+    height: 0;
+  }
+
+  .subjectsOpen {
+    -webkit-animation: conditionalOpen 1s normal forwards ease-in-out;
+    -moz-animation: conditionalOpen 1s normal forwards ease-in-out;
+    animation: conditionalOpen 1s normal forwards ease-in-out;
+    -webkit-transform-origin: 50% 0%;
+    -moz-transform-origin: 50% 0%;
+  }
+
+  .subjectsClose {
+    -webkit-animation: conditionalClose 1s normal forwards ease-in-out;
+    -moz-animation: conditionalClose 1s normal forwards ease-in-out;
+    animation: conditionalClose 1s normal forwards ease-in-out;
+    -webkit-transform-origin: 100% 0%;
+    -moz-transform-origin: 100% 0%;
+    transform-origin: 100% 0%;
+    height: 0;
+  }
+
+  @-webkit-keyframes conditionalOpen {
+    from {
+      transform: scaleY(0);
+    }
+
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  @-moz-keyframes conditionalOpen {
+    from {
+      transform: scaleY(0);
+    }
+
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes conditionalOpen {
+    from {
+      transform: scaleY(0);
+    }
+
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  @-webkit-keyframes conditionalClose {
+    from {
+      transform: scaleY(1);
+    }
+
+    to {
+      transform: scaleY(0);
+    }
+  }
+
+  @-moz-keyframes conditionalClose {
+    from {
+      transform: scaleY(1);
+    }
+
+    to {
+      transform: scaleY(0);
+    }
+  }
+
+  @keyframes conditionalClose {
+    from {
+      transform: scaleY(1);
+    }
+
+    to {
+      transform: scaleY(0);
+    }
+  }
+}

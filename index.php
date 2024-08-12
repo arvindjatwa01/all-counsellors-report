@@ -35,10 +35,17 @@
                     <div class="row monthsClose" id="months"></div>
                 </fieldset>
             </div>
-            <div class="col-lg-12 my-3">
-                <div class="col-lg-12 col-12 col-sm-12 align-items-center h-100">
+            <div class="row my-3">
+                <!-- <div class="col-lg-5 col-md-5 col-sm-12 col-12 h-100 list-price" id="list-price">
+                </div>
+                <div class="col-lg-5 col-md-5 col-sm-12 col-12 align-items-center h-100">
+                    <canvas id="myBarChart" class="barChart-fade-in mt-3"></canvas>
+                </div> -->
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 align-items-center h-100">
                     <canvas id="myBarChart" class="barChart-fade-in mt-3"></canvas>
                 </div>
+            </div>
+            <div class="col-lg-12 ">
             </div>
         </div>
     </div>

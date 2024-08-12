@@ -146,24 +146,26 @@ const responseGroupedData = (data, allMonthsReport) => {
   let _filteredData = [];
   if (allMonthsReport) {
     _filteredData = filterLastSixMonthsData(data, lastSixMonths);
-  } else {
   }
-
-  console.log("_filteredData :::: ", _filteredData);
 
   const groupedData = _filteredData.reduce((acc, item) => {
     if (!acc[item.cName]) {
       acc[item.cName] = {
         label: item.cName,
-        data: Array(6).fill(0), // Initialize an array for 6 months with 0
+        data: Array(6).fill(0),
+        perDaySalary: Array(6).fill(0),
+        dlb_salary: Number(item.dlb_salary),
+        // perDaySalary: Array(6).fill(Number(item.dlb_salary || 0)), // Initialize an array for 6 months with 0
       };
     }
     const monthIndex = lastSixMonths.findIndex(({ month, year }) => month === Number(item.month_number) && year === Number(item.year_number));
     if (monthIndex !== -1) {
       acc[item.cName].data[monthIndex] = Number(item.total_revenue);
+      acc[item.cName].perDaySalary[monthIndex] = Number(item.dlb_salary);
     }
     return acc;
   }, {});
+
   return groupedData;
 };
 
@@ -191,6 +193,7 @@ const getPerDaySallary = (allMonthsReport, results) => {
       perDaySalary.push(Number(results[i].dlb_salary) / numberOfWeeks);
     }
   }
+
   return perDaySalary;
 };
 
@@ -226,9 +229,6 @@ const showLineChart = (results = [], allMonthsReport = true, selectedMonth = nul
     // get the max Revenue Amount
     const maxRevenueAmt = Math.max(...results.map((item) => Number(item.total_revenue)));
 
-    // get the Per day salaries
-    const perDaySalary = getPerDaySallary(allMonthsReport, results);
-
     // Convert grouped data to the desired format
     const groupedData = responseGroupedData(results, allMonthsReport);
 
@@ -244,29 +244,91 @@ const showLineChart = (results = [], allMonthsReport = true, selectedMonth = nul
       });
     } else {
       // Aggregate data by cName
-      const aggregatedData = results.reduce((acc, curr) => {
-        const { cName, week_number, total_revenue } = curr;
-        if (!acc[cName]) {
-          acc[cName] = Array(5).fill(0); // Assuming there are 5 weeks in the data
+      // const aggregatedData = results.reduce((acc, curr) => {
+      //   const { cName, week_number, total_revenue, dlb_salary } = curr;
+      //   if (!acc[cName]) {
+      //     acc[cName] = {
+      //       data: Array(5).fill(0),
+      //       perDaySalary: Array(5).fill(0),
+      //     };
+      //     // Assuming there are 5 weeks in the data
+      //   }
+      //   const weekIndex = parseInt(week_number) - 26; // Adjust if week_number starts from a different number
+      //   if (weekIndex >= 0 && weekIndex < acc[cName].length) {
+      //     acc[cName][weekIndex].data[weekIndex] += parseInt(total_revenue);
+      //     acc[cName][weekIndex].perDaySalary[weekIndex] += parseInt(dlb_salary);
+      //   }
+      //   return acc;
+      // }, {});
+
+      const formattedResult = {};
+
+      // Iterate over the result array
+      results.forEach((item) => {
+        const { week_number, total_revenue, dlb_salary, dlb_a_name } = item;
+
+        // If the name is not already in the result, initialize it
+        if (!formattedResult[dlb_a_name]) {
+          formattedResult[dlb_a_name] = {
+            data: Array(5).fill(0),
+            perDaySalary: Array(5).fill(0),
+          };
         }
-        const weekIndex = parseInt(week_number) - 26; // Adjust if week_number starts from a different number
-        if (weekIndex >= 0 && weekIndex < acc[cName].length) {
-          acc[cName][weekIndex] += parseInt(total_revenue);
-        }
-        return acc;
-      }, {});
+
+        // Get the index for the week_number, assuming it starts from 26 to 30
+        const weekIndex = parseInt(week_number, 10) - 26;
+
+        // Sum the revenue and assign the salary to the corresponding week
+        formattedResult[dlb_a_name].data[weekIndex] += parseInt(total_revenue, 10);
+        formattedResult[dlb_a_name].perDaySalary[weekIndex] = parseInt(dlb_salary, 10);
+      });
 
       // Convert to the desired format
-      _result = Object.keys(aggregatedData).map((cName) => {
+      _result = Object.keys(formattedResult).map((cName) => {
         const color = getRandomColor();
+        console.log("cName ::: ", cName);
         return {
           label: cName,
-          data: aggregatedData[cName],
+          data: formattedResult[cName]["data"],
+          perDaySalary: formattedResult[cName]["perDaySalary"],
           borderColor: color,
           backgroundColor: color,
         };
       });
     }
+
+    // get the Per day salaries
+    const perDaySalary = getPerDaySallary(allMonthsReport, results);
+
+    let _html = "";
+    for (let i = 0; i < _result.length; i++) {
+      _html += `<div class="my-2">
+      <div class="card border px-3">
+                        <div class="row">
+                        <div class="col-3 d-flex align-items-center">
+                        <div class="custom-checkbox" style='background-color:${_result[i].backgroundColor}'></div>
+                          <h6 class="mx-2">${_result[i].label}</h6>
+                        </div>
+                            <div class="col-3">
+                                <div class="mx-2">
+                                    <span>Total Revenue</span>
+                                    <h5>10000</h5>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <span>Salary</span>
+                                <h5>10000</h5>
+                            </div>
+                            <div class="col-3">
+                                <span>Total Expense</span>
+                                <h5>1X</h5>
+                            </div>
+                        </div>
+                    </div>
+                    </div>`;
+    }
+
+    // $("#list-price").append(_html);
 
     const config = {
       type: "line",
@@ -294,7 +356,12 @@ const showLineChart = (results = [], allMonthsReport = true, selectedMonth = nul
             align: "top",
             // formatter: Math.round,
             formatter: (value, context) => {
-              return `${Math.ceil(Number(value) / perDaySalary[context.dataIndex] || 0)}X`;
+              // console.log("context ::: ", value, context);
+              return `${Math.ceil(Number(value) / context?.dataset?.perDaySalary[context.dataIndex] || 0)}X`;
+              return allMonthsReport
+                ? `${Math.ceil(Number(value) / context?.dataset?.perDaySalary[context.dataIndex] || 0)}X`
+                : `${Math.ceil(Number(value) / perDaySalary[context.dataIndex] || 0)}X`;
+              // return `${Math.ceil(Number(value) / perDaySalary[context.dataIndex] || 0)}X`;
             },
             color: "black",
             font: {

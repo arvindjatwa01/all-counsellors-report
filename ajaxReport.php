@@ -130,11 +130,51 @@ if ($_POST["isMonthSeleted"]) {
     $monthNumber = $_POST["monthNum"];
     $brnachId = $_POST['selectedBranch'];
 
-    // $query = "SELECT WEEK(dlb_revenue_date) AS week_number, COUNT(*) AS records_count, SUM(dlb_collectorate_revenue) AS total_revenue, MAX(dlb_collectorate_revenue) AS highest_revenue, dlb_salary, GROUP_CONCAT(dlb_c_id ORDER BY dlb_c_id ASC) AS dlb_c_ids, GROUP_CONCAT(dlb_counsellor_id ORDER BY dlb_c_id ASC) AS dlb_a_ids, MAX(dlb_revenue_date) AS dlb_revenue_date FROM wifi_counsellor_report wcr LEFT JOIN wifi_admin wa 
-    // ON wa.dlb_a_id = wcr.dlb_counsellor_id  WHERE dlb_branch_id = $brnachId AND MONTH(dlb_revenue_date) = $monthNumber AND YEAR(dlb_revenue_date) = YEAR(CURDATE()) GROUP BY WEEK(dlb_revenue_date) ORDER BY WEEK(dlb_revenue_date) ASC";
+    //     $query = "SELECT 
+//     WEEK(dlb_revenue_date) AS week_number, 
+//     COUNT(*) AS records_count, 
+//     SUM(dlb_collectorate_revenue) AS total_revenue, 
+//     MAX(dlb_collectorate_revenue) AS highest_revenue, 
+//     dlb_salary,  
+//     GROUP_CONCAT(dlb_c_id ORDER BY dlb_c_id ASC) AS dlb_c_ids, 
+//     dlb_counsellor_id AS dlb_a_ids, 
+//     MAX(dlb_revenue_date) AS dlb_revenue_date 
+// FROM 
+//     wifi_counsellor_report 
+// WHERE 
+//     MONTH(dlb_revenue_date) = $monthNumber 
+//     AND wifi_counsellor_report.dlb_branch_name = $brnachId 
+//     AND YEAR(dlb_revenue_date) = YEAR(CURDATE()) 
+// GROUP BY 
+//     WEEK(dlb_revenue_date), 
+//     dlb_a_ids 
+// ORDER BY 
+//     WEEK(dlb_revenue_date) ASC";
 
-    $query = "SELECT wcr.dlb_counsellor_id, wa.dlb_a_name AS cName, MONTH(dlb_revenue_date) as 
-month_number, WEEK(dlb_revenue_date) as week_number, SUM(dlb_collectorate_revenue) AS total_revenue, MAX(dlb_collectorate_revenue) AS highest_revenue, wcr.dlb_salary, MAX(dlb_revenue_date) AS dlb_revenue_date FROM `wifi_counsellor_report` wcr LEFT JOIN wifi_admin wa ON wa.dlb_a_id = wcr.dlb_counsellor_id WHERE MONTH(dlb_revenue_date) = $monthNumber AND wcr.dlb_branch_name = $brnachId AND YEAR(dlb_revenue_date) = YEAR(CURDATE()) GROUP BY WEEK(dlb_revenue_date) ORDER BY WEEK(dlb_revenue_date) ASC";
+    $query = "
+   SELECT 
+    WEEK(dlb_revenue_date) AS week_number, 
+    COUNT(*) AS records_count, 
+    SUM(dlb_collectorate_revenue) AS total_revenue, 
+    MAX(dlb_collectorate_revenue) AS highest_revenue, 
+    wifi_counsellor_report.dlb_salary,
+    ad.dlb_a_name,
+    GROUP_CONCAT(dlb_c_id ORDER BY dlb_c_id ASC) AS dlb_c_ids, 
+    dlb_counsellor_id AS dlb_a_ids, 
+    MAX(dlb_revenue_date) AS dlb_revenue_date 
+FROM 
+    wifi_counsellor_report 
+    JOIN wifi_admin AS ad ON ad.dlb_a_id = wifi_counsellor_report.dlb_counsellor_id
+WHERE 
+    MONTH(dlb_revenue_date) = $monthNumber  
+    AND wifi_counsellor_report.dlb_branch_name = $brnachId  
+    AND YEAR(dlb_revenue_date) = YEAR(CURDATE()) 
+GROUP BY 
+    WEEK(dlb_revenue_date), 
+    dlb_a_ids 
+ORDER BY 
+    WEEK(dlb_revenue_date) ASC
+";
     $result = mysqli_query($db, $query);
 
     // Fetch data from the result set
